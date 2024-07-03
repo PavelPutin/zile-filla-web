@@ -1,4 +1,6 @@
-class FileSystemObject {
+import { FileSystemMetadata } from "./file-system-metadata";
+
+export class FileSystemObject {
   readonly type: "file" | "dir";
   readonly name: String;
   readonly metadata: FileSystemMetadata;

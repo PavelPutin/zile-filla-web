@@ -1,4 +1,4 @@
-class FileSystemMetadata {
+export class FileSystemMetadata {
   readonly sizeBytes: number;
   readonly creation: Date;
   readonly access: Date;
