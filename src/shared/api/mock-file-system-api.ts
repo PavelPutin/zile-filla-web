@@ -5,11 +5,9 @@ import { FILE_SYSTEM } from "./mock-backend";
 class MockFileSystemApi implements FileSystemApi {
   async changeDirectory(path: string): Promise<FileSystemObject[]> {
     console.log(`start changeDirectory(${path})`);
-    await new Promise((resolved) => setTimeout(resolved, 1000));
+    await new Promise((resolved) => setTimeout(resolved, 5000));
     console.log("end waiting");
-    const result = new Promise<FileSystemObject[]>((resolve) => resolve(FILE_SYSTEM[path]));
-    console.dir(result);
-    return result;
+    return new Promise<FileSystemObject[]>((resolve) => resolve(FILE_SYSTEM[path]));
   }
 }
 
