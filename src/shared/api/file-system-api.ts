@@ -1,3 +1,3 @@
 interface FileSystemApi {
-  changeDirectory(path: string) : FileSystemObject;
+  changeDirectory(path: string) : Promise<FileSystemObject[]>;
 }

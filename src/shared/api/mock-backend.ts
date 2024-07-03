@@ -1,4 +1,4 @@
-export const FILE_SYSTEM = {
+export const FILE_SYSTEM: { [key: string]: FileSystemObject[] } = {
   "/": [
     new FileSystemObject("dir", "etc", new FileSystemMetadata(500, new Date(), new Date(), new Date())),
     new FileSystemObject("dir", "hello", new FileSystemMetadata(500, new Date(), new Date(), new Date())),
