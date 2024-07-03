@@ -1,16 +1,15 @@
-import { Typography } from "@mui/material";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "next/link";
+import Breadcrumb from "@/components/breadcrumb";
+import { Breadcrumbs } from "@mui/material";
 
 export default function Page({ params }: { params: { dir_path?: string[] } }) {
-  const pathElements = ["Начало"];
+  const pathElements = [""];
   (params.dir_path ?? []).forEach((value) => pathElements.push(value));
   const breadcrumbs = pathElements.map((value, index) => {
-    if (index === pathElements.length - 1) {
-      return <Typography color="red">{value}</Typography>
-    }
-    return <Link key={index} href="/">{value}</Link>
-  })
+    const key = value + index;
+    const last = index === pathElements.length - 1
+    const href = pathElements.slice(0, index + 1).join("/");
+    return Breadcrumb(key, value, last, href);
+  });
 
   return (
     <Breadcrumbs aria-label="breadcrumb">
