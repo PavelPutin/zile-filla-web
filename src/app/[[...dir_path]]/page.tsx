@@ -31,17 +31,6 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
   return (
     <>
       <FileBreadcrumbs pathElements={pathElements} />
-      {/* <List>
-        {
-          result.map((value) => {
-            return (
-              <ListItem>
-                <Link href={concatPath(fetchingPath, value.name)}>{value.name}</Link>
-              </ListItem>
-            );
-          })
-        }
-      </List> */}
       <TableContainer component={Paper}>
         <Table aria-label="Содержимое папки">
           <TableHead>
