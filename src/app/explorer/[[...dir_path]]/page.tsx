@@ -53,7 +53,7 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
                             "#"
                         }>
                         {value.name}
-                      </Link> :
+                      </Link>
                   </TableCell>
                   <FixedTableCell>{dateFormater.format(value.metadata.creation)}</FixedTableCell>
                   <FixedTableCell>{dateFormater.format(value.metadata.modification)}</FixedTableCell>
