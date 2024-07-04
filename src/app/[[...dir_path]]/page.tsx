@@ -1,12 +1,9 @@
 import FileBreadcrumbs from "@/components/file-breadcrumbs";
 import { fileSystemApi } from "@/shared/api/mock-file-system-api";
-import Link from "next/link";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import { notFound } from "next/navigation";
 import { concatPath, joinPath } from "@/shared/lib/path-utils";
-import { Paper, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: { dir_path?: string[] } }) {
   const pathElements = [""];
