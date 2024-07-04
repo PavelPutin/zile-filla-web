@@ -6,6 +6,8 @@ import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, Tabl
 import Link from "next/link";
 import { useState } from "react";
 import FixedTableCell from "./fixed-table-cell";
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
 
 export default function Explorer({ fetchingPath, fileSystemObjects } : { fetchingPath: string, fileSystemObjects : FileSystemObject[] }) {
   const [selectedObjects, setSelectedObjects] = useState<FileSystemObject[]>([]);
