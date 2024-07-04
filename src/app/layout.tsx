@@ -1,4 +1,6 @@
 import Header from "@/components/header";
+import { Toolbar } from "@mui/material";
+import Box from "@mui/material/Box";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,7 +19,10 @@ export default function RootLayout({
         <header>
           <Header />
         </header>
-        <main>{children}</main>
+        <Box component="main" sx={{ p: 3 }}>
+          <Toolbar />
+          {children}
+        </Box>
       </body>
     </html>
   );

@@ -1,9 +1,11 @@
 import FileBreadcrumbs from "@/components/file-breadcrumbs";
 import { fileSystemApi } from "@/shared/api/mock-file-system-api";
 import { addExplorerPrefix, concatPath, joinPath } from "@/shared/lib/path-utils";
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar } from "@mui/material";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
 
 export default async function Page({ params }: { params: { dir_path?: string[] } }) {
   const pathElements = [""];
@@ -25,9 +27,12 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
 
   const FixedTableCell = ({ children }: { children: string }) => 
     <TableCell sx={{ width: 250 }}>{children}</TableCell>;
+
+  const drawerWidth = 240;
   return (
     <>
       <FileBreadcrumbs pathElements={pathElements} />
+      <Box sx={{ display: "flex" }}>
       <TableContainer component={Paper}>
         <Table aria-label="Содержимое папки">
           <TableHead>
@@ -58,6 +63,43 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
           </TableBody>
         </Table>
       </TableContainer>
+      <Drawer
+        variant="permanent"
+        anchor="right"
+        hidden={false}
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+        }}
+      >
+        <Toolbar />
+        <Box sx={{ overflow: 'auto' }}>
+          <List>
+            {["hello", "world"].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemText>
+                  <ListItemText primary={text} />
+                </ListItemText>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['All mail', 'Trash', 'Spam'].map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+      </Box>
     </>
   );
 }
