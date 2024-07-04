@@ -5,14 +5,14 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import { notFound } from "next/navigation";
+import { concatPath, joinPath } from "@/shared/lib/path-utils";
 
 export default async function Page({ params }: { params: { dir_path?: string[] } }) {
   const pathElements = [""];
   (params.dir_path ?? []).forEach((value) => pathElements.push(value));
 
   console.log("fetching data");
-  const joinedPath = pathElements.join("/")
-  const fetchingPath = joinedPath.length === 0 ? "/" : joinedPath;
+  const fetchingPath = joinPath(pathElements);
   const result = await fileSystemApi.changeDirectory(fetchingPath);
   if (result === undefined) {
     notFound();
@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
           result.map((value) => {
             return (
               <ListItem>
-                <Link href={joinedPath + "/" + value.name}>{value.name}</Link>
+                <Link href={concatPath(fetchingPath, value.name)}>{value.name}</Link>
               </ListItem>
             );
           })
