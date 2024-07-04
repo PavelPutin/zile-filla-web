@@ -6,6 +6,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import { notFound } from "next/navigation";
 import { concatPath, joinPath } from "@/shared/lib/path-utils";
+import { Paper, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 
 export default async function Page({ params }: { params: { dir_path?: string[] } }) {
   const pathElements = [""];
@@ -13,16 +14,24 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
 
   console.log("fetching data");
   const fetchingPath = joinPath(pathElements);
-  const result = await fileSystemApi.changeDirectory(fetchingPath);
-  if (result === undefined) {
+  const currentDirectoryChildren = await fileSystemApi.changeDirectory(fetchingPath);
+  if (currentDirectoryChildren === undefined) {
     notFound();
   }
-  console.log(`file system objects: ${result}`);
+  console.log(`file system objects: ${currentDirectoryChildren}`);
 
+  const dateFormater: Intl.DateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric"
+  });
+
+  const FixedTableCell = ({ children }: { children: string }) => 
+    <TableCell sx={{ width: 250 }}>{children}</TableCell>;
   return (
     <>
       <FileBreadcrumbs pathElements={pathElements} />
-      <List>
+      {/* <List>
         {
           result.map((value) => {
             return (
@@ -32,7 +41,31 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
             );
           })
         }
-      </List>
+      </List> */}
+      <TableContainer component={Paper}>
+        <Table aria-label="Содержимое папки">
+          <TableHead>
+            <TableRow>
+              <TableCell>Название</TableCell>
+              <FixedTableCell>Время создания</FixedTableCell>
+              <FixedTableCell>Время изменения</FixedTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {
+              currentDirectoryChildren.map((value) => (
+                <TableRow key={value.type+value.name}>
+                  <TableCell>
+                    <Link href={concatPath(fetchingPath, value.name)}>{value.name}</Link>
+                  </TableCell>
+                  <FixedTableCell>{dateFormater.format(value.metadata.creation)}</FixedTableCell>
+                  <FixedTableCell>{dateFormater.format(value.metadata.modification)}</FixedTableCell>
+                </TableRow>
+              ))
+            }
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   );
 }
