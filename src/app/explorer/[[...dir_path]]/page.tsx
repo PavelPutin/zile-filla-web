@@ -1,6 +1,6 @@
 import FileBreadcrumbs from "@/components/file-breadcrumbs";
 import { fileSystemApi } from "@/shared/api/mock-file-system-api";
-import { concatPath, joinPath } from "@/shared/lib/path-utils";
+import { addExplorerPrefix, concatPath, joinPath } from "@/shared/lib/path-utils";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -42,7 +42,13 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
               currentDirectoryChildren.map((value) => (
                 <TableRow key={value.type+value.name}>
                   <TableCell>
-                    <Link href={concatPath(fetchingPath, value.name)}>{value.name}</Link>
+                      <Link
+                        href={value.type === "dir" ?
+                            addExplorerPrefix(concatPath(fetchingPath, value.name)) :
+                            "#"
+                        }>
+                        {value.name}
+                      </Link> :
                   </TableCell>
                   <FixedTableCell>{dateFormater.format(value.metadata.creation)}</FixedTableCell>
                   <FixedTableCell>{dateFormater.format(value.metadata.modification)}</FixedTableCell>

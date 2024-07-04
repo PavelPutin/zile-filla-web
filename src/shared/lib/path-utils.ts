@@ -14,3 +14,7 @@ export function concatPath(prefix: string, suffix: string): string {
   }
   return prefix + PATH_SEPARATOR + suffix;
 }
+
+export function addExplorerPrefix(path: string) {
+  return "/explorer/" + path;
+}

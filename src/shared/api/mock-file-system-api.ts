@@ -7,6 +7,9 @@ class MockFileSystemApi implements FileSystemApi {
     console.log(`start changeDirectory(${path})`);
     await new Promise((resolved) => setTimeout(resolved, 1000));
     console.log("end waiting");
+    if (path.startsWith("/explorer")) {
+      path = path.replace("/explorer", "");
+    }
     return new Promise<FileSystemObject[]>((resolve) => resolve(FILE_SYSTEM[path]));
   }
 }
