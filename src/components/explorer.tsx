@@ -49,6 +49,26 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
     ]
   }
 
+  function isSelected(key: string): boolean {
+    return selectedObjects[key] !== undefined;
+  }
+
+  function handleRowClick(value: FileSystemObject) {
+    const key = concatPath(fetchingPath, value.name);
+    if (key in selectedObjects) {
+      let copy = { ...selectedObjects };
+      delete copy[key];
+      setSelectedObjects(copy);
+    } else {
+      let justSelected : { [key: string]: FileSystemObject } = {};
+      justSelected[key] = value;
+      setSelectedObjects(selectedObjects => ({
+        ...selectedObjects,
+        ...justSelected
+      }));
+    }
+  }
+
   return (<>
     <Box sx={{ display: "flex" }}>
       <Box component="div" sx={{ flexGrow: 1}}>
@@ -71,21 +91,7 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
             <TableBody>
               {
                 fileSystemObjects.map((value) => (
-                  <TableRow key={concatPath(fetchingPath, value.name)} onClick={() => {
-                    const key = concatPath(fetchingPath, value.name);
-                    if (key in selectedObjects) {
-                      let copy = { ...selectedObjects };
-                      delete copy[key];
-                      setSelectedObjects(copy);
-                    } else {
-                      let justSelected : { [key: string]: FileSystemObject } = {};
-                      justSelected[key] = value;
-                      setSelectedObjects(selectedObjects => ({
-                        ...selectedObjects,
-                        ...justSelected
-                      }));
-                    }
-                  }}>
+                  <TableRow key={concatPath(fetchingPath, value.name)} hover sx={{ cursor: 'pointer' }} onClick={() => handleRowClick(value)} selected={isSelected(concatPath(fetchingPath, value.name))}>
                     <TableCell>
                         <Link
                           href={value.type === "dir" ?
