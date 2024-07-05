@@ -22,8 +22,7 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
 
   return (
     <>
-      <FileBreadcrumbs pathElements={pathElements} />
-      <Explorer fetchingPath={fetchingPath} fileSystemObjects={currentDirectoryChildren} />
+      <Explorer pathElements={pathElements} fetchingPath={fetchingPath} fileSystemObjects={currentDirectoryChildren} />
     </>
   );
 }
