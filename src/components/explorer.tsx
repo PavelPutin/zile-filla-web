@@ -2,16 +2,18 @@
 
 import { addExplorerPrefix, concatPath } from "@/shared/lib/path-utils";
 import { FileSystemObject } from "@/shared/model/file-system-object";
-import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Divider, ListItemButton, ListItemIcon, Button, Typography } from "@mui/material";
+import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Divider, ListItemButton, ListItemIcon, Button, Typography, IconButton } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
 import FixedTableCell from "./fixed-table-cell";
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import InfoIcon from '@mui/icons-material/Info';
 import FileBreadcrumbs from "./file-breadcrumbs";
 
 export default function Explorer({ pathElements, fetchingPath, fileSystemObjects } : { pathElements: string[], fetchingPath: string, fileSystemObjects : FileSystemObject[] }) {
   const [selectedObjects, setSelectedObjects] = useState<{[path: string]: FileSystemObject}>({});
+  const [infoDrawerIsHidden, setInfoDrawerIsHidden] = useState<boolean>(true);
   const dateFormater: Intl.DateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
     year: "numeric",
     month: "numeric",
@@ -24,8 +26,9 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
       <Box component="div" sx={{ flexGrow: 1}}>
         <Box component="div" sx={{ display: "flex", justifyContent: "space-between" }}>
           <FileBreadcrumbs pathElements={pathElements} />
-          <Box>
-            {selectedObjectsAmount > 0 && <Typography>Выбрано элементов: {selectedObjectsAmount}</Typography>}
+          <Box sx={{ display: "flex", alignContent: "center", minHeight: 40 }}>
+            {selectedObjectsAmount > 0 && <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>}
+            {selectedObjectsAmount === 1 && <IconButton onClick={() => {setInfoDrawerIsHidden(false)}}><InfoIcon /></IconButton>}
           </Box>
         </Box>
         <TableContainer component={Paper}>
@@ -76,7 +79,7 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
       <Drawer
         variant="permanent"
         anchor="right"
-        hidden={false}
+        hidden={infoDrawerIsHidden}
         sx={{
           width: drawerWidth,
           flexShrink: 0,
