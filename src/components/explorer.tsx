@@ -2,7 +2,7 @@
 
 import { addExplorerPrefix, concatPath } from "@/shared/lib/path-utils";
 import { FileSystemObject } from "@/shared/model/file-system-object";
-import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Divider, ListItemButton, ListItemIcon } from "@mui/material";
+import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Divider, ListItemButton, ListItemIcon, Button } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
 import FixedTableCell from "./fixed-table-cell";
@@ -10,14 +10,15 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 
 export default function Explorer({ fetchingPath, fileSystemObjects } : { fetchingPath: string, fileSystemObjects : FileSystemObject[] }) {
-  const [selectedObjects, setSelectedObjects] = useState<FileSystemObject[]>([]);
+  const [selectedObjects, setSelectedObjects] = useState<{[path: string]: FileSystemObject}>({});
   const dateFormater: Intl.DateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
     year: "numeric",
     month: "numeric",
     day: "numeric"
   });
   const drawerWidth = 240;
-  return (
+  return (<>
+    <Button onClick={() => console.log(selectedObjects)}>Show state</Button>
     <Box sx={{ display: "flex" }}>
       <TableContainer component={Paper}>
         <Table aria-label="Содержимое папки">
@@ -31,7 +32,21 @@ export default function Explorer({ fetchingPath, fileSystemObjects } : { fetchin
           <TableBody>
             {
               fileSystemObjects.map((value) => (
-                <TableRow key={value.type+value.name}>
+                <TableRow key={concatPath(fetchingPath, value.name)} onClick={() => {
+                  const key = concatPath(fetchingPath, value.name);
+                  if (key in selectedObjects) {
+                    let copy = { ...selectedObjects };
+                    delete copy[key];
+                    setSelectedObjects(copy);
+                  } else {
+                    let justSelected : { [key: string]: FileSystemObject } = {};
+                    justSelected[key] = value;
+                    setSelectedObjects(selectedObjects => ({
+                      ...selectedObjects,
+                      ...justSelected
+                    }));
+                  }
+                }}>
                   <TableCell>
                       <Link
                         href={value.type === "dir" ?
@@ -85,6 +100,6 @@ export default function Explorer({ fetchingPath, fileSystemObjects } : { fetchin
           </List>
         </Box>
       </Drawer>
-    </Box>
+    </Box></>
   );
 }
