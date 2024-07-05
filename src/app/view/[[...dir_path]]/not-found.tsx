@@ -1,3 +1,3 @@
 export default function NotFound() {
-  return <h2>Директория не найдена</h2>
+  return <h2>Файл не найден</h2>
 }

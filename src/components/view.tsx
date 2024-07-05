@@ -1,12 +1,19 @@
 "use client"
 
+import { TextFileContent } from "@/shared/model/text-file-content";
 import FileBreadcrumbs from "./file-breadcrumbs";
+import { Box, Paper, Typography } from "@mui/material";
 
-export default function Explorer({ pathElements } : { pathElements: string[] }) {
+// TODO: make props as type
+export default function Explorer({ pathElements, fileContent } : { pathElements: string[], fileContent: TextFileContent }) {
   return (
     <>
       <FileBreadcrumbs pathElements={pathElements} />
-      <h2>View</h2>
+      <Paper elevation={3}>
+        <Box p={5}>
+          <Typography>{fileContent.content}</Typography>
+        </Box>
+      </Paper>
     </>
   );
 }
