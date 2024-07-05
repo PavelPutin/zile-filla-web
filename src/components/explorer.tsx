@@ -1,6 +1,6 @@
 "use client"
 
-import { addExplorerPrefix, concatPath } from "@/shared/lib/path-utils";
+import { addExplorerPrefix, addViwPrefix as addViewPrefix, concatPath } from "@/shared/lib/path-utils";
 import { FileSystemObject } from "@/shared/model/file-system-object";
 import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Divider, ListItemButton, ListItemIcon, Button, Typography, IconButton } from "@mui/material";
 import Link from "next/link";
@@ -96,7 +96,7 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
                         <Link
                           href={value.type === "dir" ?
                               addExplorerPrefix(concatPath(fetchingPath, value.name)) :
-                              "#"
+                              addViewPrefix(concatPath(fetchingPath, value.name))
                           }>
                           {value.name}
                         </Link>
