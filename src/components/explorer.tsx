@@ -9,7 +9,14 @@ import FixedTableCell from "./fixed-table-cell";
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import InfoIcon from '@mui/icons-material/Info';
+import CloseIcon from '@mui/icons-material/Close';
 import FileBreadcrumbs from "./file-breadcrumbs";
+import { SizeConvert } from "@/shared/lib/size-converter";
+
+type InfoData = {
+  title: string,
+  data: string
+}
 
 export default function Explorer({ pathElements, fetchingPath, fileSystemObjects } : { pathElements: string[], fetchingPath: string, fileSystemObjects : FileSystemObject[] }) {
   const [selectedObjects, setSelectedObjects] = useState<{[path: string]: FileSystemObject}>({});
@@ -19,8 +26,29 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
     month: "numeric",
     day: "numeric"
   });
-  const drawerWidth = 240;
+  const drawerWidth = 500;
   const selectedObjectsAmount = Object.keys(selectedObjects).length;
+  
+  let infoData: InfoData[] | undefined;
+  if (selectedObjectsAmount === 1) {
+    const selected = Object.values(selectedObjects)[0];
+    infoData = [
+      {
+        title: "Размер",
+        data: SizeConvert(selected.metadata.sizeBytes)
+      }, {
+        title: "Дата создания",
+        data: dateFormater.format(selected.metadata.creation),
+      }, {
+        title: "Дата изменения",
+        data: dateFormater.format(selected.metadata.modification),
+      }, {
+        title: "Дата доступа",
+        data: dateFormater.format(selected.metadata.access),
+      }
+    ]
+  }
+
   return (<>
     <Box sx={{ display: "flex" }}>
       <Box component="div" sx={{ flexGrow: 1}}>
@@ -88,28 +116,26 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          <List>
-            {["hello", "world"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemText>
-                  <ListItemText primary={text} />
-                </ListItemText>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            {
+              selectedObjectsAmount === 1 ?
+                <Typography alignContent="center">{Object.values(selectedObjects)[0].name}</Typography> :
+                <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>
+            }
+            <IconButton onClick={() => {setInfoDrawerIsHidden(true)}}><CloseIcon /></IconButton>
+          </Box>
+          {
+            infoData && 
+            <List>
+              {infoData.map((data, index) => (
+                <ListItem key={data.title} disablePadding>
+                  <ListItemText>
+                    <ListItemText primary={data.title} secondary={data.data}/>
+                  </ListItemText>
+                </ListItem>
+              ))}
+            </List>
+          }
         </Box>
       </Drawer>
     </Box></>
