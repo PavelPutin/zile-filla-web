@@ -13,5 +13,3 @@ class MockFileSystemApi implements FileSystemApi {
     return new Promise<FileSystemObject[]>((resolve) => resolve(FILE_SYSTEM[path]));
   }
 }
-
-export const fileSystemApi = new MockFileSystemApi();
