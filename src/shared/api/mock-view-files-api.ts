@@ -2,7 +2,7 @@ import { TextFileContent } from "../model/text-file-content";
 import { FILES } from "./mock-files-backend";
 import { ViewFilesApi } from "./view-files-api";
 
-class MockViewFilesApi implements ViewFilesApi {
+export class MockViewFilesApi implements ViewFilesApi {
   async getFileContent(path: string): Promise<TextFileContent> {
     console.log(`start view file(${path})`);
     await new Promise((resolved) => setTimeout(resolved, 1000));
@@ -13,5 +13,3 @@ class MockViewFilesApi implements ViewFilesApi {
     return new Promise<TextFileContent>((resolve) => resolve(FILES[path]));
   }
 }
-
-export const viewFilesApi = new MockViewFilesApi();

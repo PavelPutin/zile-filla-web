@@ -11,7 +11,7 @@ export default function Explorer({ pathElements, fileContent } : { pathElements:
       <FileBreadcrumbs pathElements={pathElements} />
       <Paper elevation={3}>
         <Box p={5}>
-          <Typography>{fileContent.content}</Typography>
+          <Typography sx={{ whiteSpace: "pre-wrap" }}>{fileContent.content}</Typography>
         </Box>
       </Paper>
     </>
