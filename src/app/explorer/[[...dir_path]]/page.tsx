@@ -1,7 +1,8 @@
 import { fileSystemApi } from "@/shared/api/file-system-api";
 import { joinPath } from "@/shared/lib/path-utils";
-import { notFound } from "next/navigation";
 import Explorer from "@/components/explorer";
+import { NoSuchFileError } from "@/shared/api/error/no-such-file-error";
+import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: { dir_path?: string[] } }) {
   const pathElements = [""];
@@ -9,15 +10,19 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
 
   console.log("fetching data");
   const fetchingPath = joinPath(pathElements);
-  const currentDirectoryChildren = await fileSystemApi.changeDirectory(fetchingPath);
-  if (currentDirectoryChildren === undefined) {
-    notFound();
+  
+  try {
+    const currentDirectoryChildren = await fileSystemApi.changeDirectory(fetchingPath);
+    console.log(`file system objects: ${currentDirectoryChildren}`);
+    return (
+      <>
+        <Explorer pathElements={pathElements} fetchingPath={fetchingPath} fileSystemObjects={currentDirectoryChildren} />
+      </>
+    );
+  } catch (e) {
+    if (e instanceof NoSuchFileError) {
+      notFound();
+    }
   }
-  console.log(`file system objects: ${currentDirectoryChildren}`);
-
-  return (
-    <>
-      <Explorer pathElements={pathElements} fetchingPath={fetchingPath} fileSystemObjects={currentDirectoryChildren} />
-    </>
-  );
+  return <></>;
 }
