@@ -2,23 +2,22 @@
 
 import { addExplorerPrefix, addViwPrefix as addViewPrefix, concatPath } from "@/shared/lib/path-utils";
 import { FileSystemObject } from "@/shared/model/file-system-object";
-import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Divider, ListItemButton, ListItemIcon, Button, Typography, IconButton } from "@mui/material";
+import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
 import FixedTableCell from "./fixed-table-cell";
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import InfoIcon from '@mui/icons-material/Info';
 import CloseIcon from '@mui/icons-material/Close';
 import FileBreadcrumbs from "./file-breadcrumbs";
 import { SizeConvert } from "@/shared/lib/size-converter";
+import ErrorInfo from "./error-info";
 
 type InfoData = {
   title: string,
   data: string
 }
 
-export default function Explorer({ pathElements, fetchingPath, fileSystemObjects } : { pathElements: string[], fetchingPath: string, fileSystemObjects : FileSystemObject[] }) {
+export default function Explorer({ pathElements, fetchingPath, fileSystemObjects, error } : { pathElements: string[], fetchingPath: string, fileSystemObjects : FileSystemObject[], error: any | undefined }) {
   const [selectedObjects, setSelectedObjects] = useState<{[path: string]: FileSystemObject}>({});
   const [infoDrawerIsHidden, setInfoDrawerIsHidden] = useState<boolean>(true);
   const dateFormater: Intl.DateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
@@ -74,76 +73,86 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
       <Box component="div" sx={{ flexGrow: 1}}>
         <Box component="div" sx={{ display: "flex", justifyContent: "space-between" }}>
           <FileBreadcrumbs pathElements={pathElements} />
-          <Box sx={{ display: "flex", alignContent: "center", minHeight: 40 }}>
-            {selectedObjectsAmount > 0 && <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>}
-            {selectedObjectsAmount === 1 && <IconButton onClick={() => {setInfoDrawerIsHidden(false)}}><InfoIcon /></IconButton>}
-          </Box>
-        </Box>
-        <TableContainer component={Paper}>
-          <Table aria-label="Содержимое папки">
-            <TableHead>
-              <TableRow>
-                <TableCell>Название</TableCell>
-                <FixedTableCell>Время создания</FixedTableCell>
-                <FixedTableCell>Время изменения</FixedTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {
-                fileSystemObjects.map((value) => (
-                  <TableRow key={concatPath(fetchingPath, value.name)} hover sx={{ cursor: 'pointer' }} onClick={() => handleRowClick(value)} selected={isSelected(concatPath(fetchingPath, value.name))}>
-                    <TableCell>
-                        <Link
-                          href={value.type === "dir" ?
-                              addExplorerPrefix(concatPath(fetchingPath, value.name)) :
-                              addViewPrefix(concatPath(fetchingPath, value.name))
-                          }>
-                          {value.name}
-                        </Link>
-                    </TableCell>
-                    <FixedTableCell>{dateFormater.format(value.metadata.creation)}</FixedTableCell>
-                    <FixedTableCell>{dateFormater.format(value.metadata.modification)}</FixedTableCell>
-                  </TableRow>
-                ))
-              }
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-      <Drawer
-        variant="permanent"
-        anchor="right"
-        hidden={infoDrawerIsHidden}
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-        }}
-      >
-        <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            {
-              selectedObjectsAmount === 1 ?
-                <Typography alignContent="center">{Object.values(selectedObjects)[0].name}</Typography> :
-                <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>
-            }
-            <IconButton onClick={() => {setInfoDrawerIsHidden(true)}}><CloseIcon /></IconButton>
-          </Box>
           {
-            infoData && 
-            <List>
-              {infoData.map((data, index) => (
-                <ListItem key={data.title} disablePadding>
-                  <ListItemText>
-                    <ListItemText primary={data.title} secondary={data.data}/>
-                  </ListItemText>
-                </ListItem>
-              ))}
-            </List>
+            error !== undefined &&
+            <Box sx={{ display: "flex", alignContent: "center", minHeight: 40 }}>
+              {selectedObjectsAmount > 0 && <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>}
+              {selectedObjectsAmount === 1 && <IconButton onClick={() => {setInfoDrawerIsHidden(false)}}><InfoIcon /></IconButton>}
+            </Box>
           }
         </Box>
-      </Drawer>
+        {
+          error === undefined ?
+          <TableContainer component={Paper}>
+            <Table aria-label="Содержимое папки">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Название</TableCell>
+                  <FixedTableCell>Время создания</FixedTableCell>
+                  <FixedTableCell>Время изменения</FixedTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {
+                  fileSystemObjects.map((value) => (
+                    <TableRow key={concatPath(fetchingPath, value.name)} hover sx={{ cursor: 'pointer' }} onClick={() => handleRowClick(value)} selected={isSelected(concatPath(fetchingPath, value.name))}>
+                      <TableCell>
+                          <Link
+                            href={value.type === "dir" ?
+                                addExplorerPrefix(concatPath(fetchingPath, value.name)) :
+                                addViewPrefix(concatPath(fetchingPath, value.name))
+                            }>
+                            {value.name}
+                          </Link>
+                      </TableCell>
+                      <FixedTableCell>{dateFormater.format(value.metadata.creation)}</FixedTableCell>
+                      <FixedTableCell>{dateFormater.format(value.metadata.modification)}</FixedTableCell>
+                    </TableRow>
+                  ))
+                }
+              </TableBody>
+            </Table>
+          </TableContainer> :
+          <ErrorInfo error={error} />
+        }
+      </Box>
+      {
+        error !== undefined &&
+        <Drawer
+          variant="permanent"
+          anchor="right"
+          hidden={infoDrawerIsHidden}
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+          }}
+        >
+          <Toolbar />
+          <Box sx={{ overflow: 'auto' }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              {
+                selectedObjectsAmount === 1 ?
+                  <Typography alignContent="center">{Object.values(selectedObjects)[0].name}</Typography> :
+                  <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>
+              }
+              <IconButton onClick={() => {setInfoDrawerIsHidden(true)}}><CloseIcon /></IconButton>
+            </Box>
+            {
+              infoData && 
+              <List>
+                {infoData.map((data, index) => (
+                  <ListItem key={data.title} disablePadding>
+                    <ListItemText>
+                      <ListItemText primary={data.title} secondary={data.data}/>
+                    </ListItemText>
+                  </ListItem>
+                ))}
+              </List>
+            }
+          </Box>
+        </Drawer>
+      }
     </Box></>
   );
 }
