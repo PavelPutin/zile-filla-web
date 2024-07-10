@@ -6,8 +6,8 @@ export default function Breadcrumb(key: string, value: string, last: boolean, hr
   href = href === "" ? "/" : href;
 
   if (last) {
-    return <Typography key={key} color="red">{title}</Typography>
+    return <Typography key={key} color={"#c7649d"}>{title}</Typography>;
   }
 
-  return <Link key={key} href={href}>{title}</Link>
+  return <Typography key={key}><Link href={href}>{title}</Link></Typography>;
 }
