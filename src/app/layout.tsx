@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import { Toolbar } from "@mui/material";
 import Box from "@mui/material/Box";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Zile Filla",
