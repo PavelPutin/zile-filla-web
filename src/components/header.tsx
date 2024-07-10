@@ -10,7 +10,7 @@ import Image from 'next/image';
 export default function Header() {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar color="transparent" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar position="fixed" sx={{ backgroundColor: "white", zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Stack alignItems="center" direction="row" gap={1}>
             <Image src={"/images/ZileFilla.png"} alt="Логотип" width={50} height={50} />
