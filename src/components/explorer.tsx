@@ -2,7 +2,7 @@
 
 import { addExplorerPrefix, addViwPrefix as addViewPrefix, concatPath } from "@/shared/lib/path-utils";
 import { FileSystemObject } from "@/shared/model/file-system-object";
-import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton } from "@mui/material";
+import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton, Stack } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
 import FixedTableCell from "./fixed-table-cell";
@@ -88,9 +88,9 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
             <Table aria-label="Содержимое папки">
               <TableHead>
                 <TableRow>
-                  <TableCell>Название</TableCell>
-                  <FixedTableCell>Время создания</FixedTableCell>
-                  <FixedTableCell>Время изменения</FixedTableCell>
+                  <TableCell><Typography>Название</Typography></TableCell>
+                  <FixedTableCell><Typography>Время создания</Typography></FixedTableCell>
+                  <FixedTableCell><Typography>Время изменения</Typography></FixedTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -98,32 +98,34 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
                   fileSystemObjects.map((value) => (
                     <TableRow key={concatPath(fetchingPath, value.name)} hover sx={{ cursor: 'pointer' }} onClick={() => handleRowClick(value)} selected={isSelected(concatPath(fetchingPath, value.name))}>
                       <TableCell>
-                          {value.type === "dir" ?
-                            <Image
-                              src="/images/directory.svg"
-                              width={30}
-                              height={30}
-                              alt="Директория:"
-                            /> :
-                            <Image
-                              src="/images/file.svg"
-                              width={30}
-                              height={30}
-                              alt="Файл:"
-                            />
-                          }
-                          
-                          <Link
-                            href={value.type === "dir" ?
-                                addExplorerPrefix(concatPath(fetchingPath, value.name)) :
-                                addViewPrefix(concatPath(fetchingPath, value.name))
+                          <Stack alignItems="center" direction="row" gap={2}>
+                            {value.type === "dir" ?
+                              <Image
+                                src="/images/directory.svg"
+                                width={30}
+                                height={30}
+                                alt="Директория:"
+                              /> :
+                              <Image
+                                src="/images/file.svg"
+                                width={30}
+                                height={30}
+                                alt="Файл:"
+                              />
                             }
-                          >
-                            {value.name}
-                          </Link>
+                            
+                            <Link
+                              href={value.type === "dir" ?
+                                  addExplorerPrefix(concatPath(fetchingPath, value.name)) :
+                                  addViewPrefix(concatPath(fetchingPath, value.name))
+                              }
+                            >
+                              <Typography>{value.name}</Typography>
+                            </Link>
+                          </Stack>
                       </TableCell>
-                      <FixedTableCell>{dateFormater.format(value.metadata.creation)}</FixedTableCell>
-                      <FixedTableCell>{dateFormater.format(value.metadata.modification)}</FixedTableCell>
+                      <FixedTableCell><Typography>{dateFormater.format(value.metadata.creation)}</Typography></FixedTableCell>
+                      <FixedTableCell><Typography>{dateFormater.format(value.metadata.modification)}</Typography></FixedTableCell>
                     </TableRow>
                   ))
                 }
