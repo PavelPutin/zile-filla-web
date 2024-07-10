@@ -4,16 +4,16 @@ import { FileSystemApi } from "./file-system-api";
 
 export class HttpFileSystemApi implements FileSystemApi {
   async changeDirectory(path: string): Promise<FileSystemObject[]> {
-    console.log(`start changeDirectory(${path})`);
+    console.log(`Start changeDirectory(${path})`);
     const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/explorer${path}`, {cache: "no-store"});
+    console.log(`Response status from ${path}: ${response.status} (${response.statusText})`);
     if (!response.ok) {
-      throw await response.json();
+      const problem = await response.json();
+      console.log(`Problem: ${problem}`);
     }
-    console.log(`response to ${path} payload`);
     let payload = (await response.json()) as any[];
 
     payload = payload.map((value, index) => {
-      console.log(value);
       const fsObject: FileSystemObject = {
         "type": value["type"],
         "name": value["name"],
@@ -24,10 +24,10 @@ export class HttpFileSystemApi implements FileSystemApi {
           "modification": new Date(value["metadata"]["modification"]),
         } as FileSystemMetadata
       };
-      console.dir(fsObject);
       return fsObject;
     }) as FileSystemObject[];
 
+    console.log(`Fetched ${payload.length} elements`);
     return payload;
   }
 }
