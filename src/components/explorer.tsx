@@ -11,6 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import FileBreadcrumbs from "./file-breadcrumbs";
 import { SizeConvert } from "@/shared/lib/size-converter";
 import ErrorInfo from "./error-info";
+import Image from "next/image";
 
 type InfoData = {
   title: string,
@@ -97,11 +98,27 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
                   fileSystemObjects.map((value) => (
                     <TableRow key={concatPath(fetchingPath, value.name)} hover sx={{ cursor: 'pointer' }} onClick={() => handleRowClick(value)} selected={isSelected(concatPath(fetchingPath, value.name))}>
                       <TableCell>
+                          {value.type === "dir" ?
+                            <Image
+                              src="/images/directory.svg"
+                              width={30}
+                              height={30}
+                              alt="Директория:"
+                            /> :
+                            <Image
+                              src="/images/file.svg"
+                              width={30}
+                              height={30}
+                              alt="Файл:"
+                            />
+                          }
+                          
                           <Link
                             href={value.type === "dir" ?
                                 addExplorerPrefix(concatPath(fetchingPath, value.name)) :
                                 addViewPrefix(concatPath(fetchingPath, value.name))
-                            }>
+                            }
+                          >
                             {value.name}
                           </Link>
                       </TableCell>
