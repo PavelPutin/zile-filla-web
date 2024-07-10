@@ -75,7 +75,7 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
         <Box component="div" sx={{ display: "flex", justifyContent: "space-between" }}>
           <FileBreadcrumbs pathElements={pathElements} />
           {
-            error !== undefined &&
+            error === undefined &&
             <Box sx={{ display: "flex", alignContent: "center", minHeight: 40 }}>
               {selectedObjectsAmount > 0 && <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>}
               {selectedObjectsAmount === 1 && <IconButton onClick={() => {setInfoDrawerIsHidden(false)}}><InfoIcon /></IconButton>}
@@ -134,7 +134,7 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
         }
       </Box>
       {
-        error !== undefined &&
+        error === undefined &&
         <Drawer
           variant="permanent"
           anchor="right"
