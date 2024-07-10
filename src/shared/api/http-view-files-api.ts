@@ -7,7 +7,7 @@ export class HttpViewFilesApi implements ViewFilesApi {
     console.log(`fetch http://${process.env.BACKEND_HOST}/visit${path}`)
     const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/view${path}`);
     if (!response.ok) {
-      throw new Error();
+      throw await response.json();
     }
     let payload = (await response.json()) as TextFileContent;
     return payload;
