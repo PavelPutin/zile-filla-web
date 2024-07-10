@@ -84,59 +84,65 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
         </Box>
         {
           error === undefined ?
-          <TableContainer component={Paper}>
-            <Table aria-label="Содержимое папки">
-              <TableHead>
-                <TableRow>
-                  <TableCell><Typography>Название</Typography></TableCell>
-                  <FixedTableCell><Typography>Время создания</Typography></FixedTableCell>
-                  <FixedTableCell><Typography>Время изменения</Typography></FixedTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {
-                  fileSystemObjects.map((value) => (
-                    <TableRow key={concatPath(fetchingPath, value.name)} hover sx={{ cursor: 'pointer' }} onClick={() => handleRowClick(value)} selected={isSelected(concatPath(fetchingPath, value.name))}>
-                      <TableCell>
-                          <Stack alignItems="center" direction="row" gap={2}>
-                            {value.type === "dir" ?
-                              <Image
-                                src="/images/directory.svg"
-                                width={30}
-                                height={30}
-                                alt="Директория:"
-                              /> :
-                              <Image
-                                src="/images/file.svg"
-                                width={30}
-                                height={30}
-                                alt="Файл:"
-                              />
-                            }
-                            
-                            <Link
-                              href={value.type === "dir" ?
-                                  addExplorerPrefix(concatPath(fetchingPath, value.name)) :
-                                  addViewPrefix(concatPath(fetchingPath, value.name))
-                              }
-                            >
-                              <Typography>{value.name}</Typography>
-                            </Link>
-                          </Stack>
-                      </TableCell>
-                      <FixedTableCell><Typography>{dateFormater.format(value.metadata.creation)}</Typography></FixedTableCell>
-                      <FixedTableCell><Typography>{dateFormater.format(value.metadata.modification)}</Typography></FixedTableCell>
+            fileSystemObjects.length === 0 ?
+              <Box>
+                <Typography align="center">
+                  Директория пустая
+                </Typography>
+              </Box> :
+              <TableContainer component={Paper}>
+                <Table aria-label="Содержимое папки">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell><Typography>Название</Typography></TableCell>
+                      <FixedTableCell><Typography>Время создания</Typography></FixedTableCell>
+                      <FixedTableCell><Typography>Время изменения</Typography></FixedTableCell>
                     </TableRow>
-                  ))
-                }
-              </TableBody>
-            </Table>
-          </TableContainer> :
-          <ErrorInfo error={error} />
+                  </TableHead>
+                  <TableBody>
+                    {
+                      fileSystemObjects.map((value) => (
+                        <TableRow key={concatPath(fetchingPath, value.name)} hover sx={{ cursor: 'pointer' }} onClick={() => handleRowClick(value)} selected={isSelected(concatPath(fetchingPath, value.name))}>
+                          <TableCell>
+                              <Stack alignItems="center" direction="row" gap={2}>
+                                {value.type === "dir" ?
+                                  <Image
+                                    src="/images/directory.svg"
+                                    width={30}
+                                    height={30}
+                                    alt="Директория:"
+                                  /> :
+                                  <Image
+                                    src="/images/file.svg"
+                                    width={30}
+                                    height={30}
+                                    alt="Файл:"
+                                  />
+                                }
+                                
+                                <Link
+                                  href={value.type === "dir" ?
+                                      addExplorerPrefix(concatPath(fetchingPath, value.name)) :
+                                      addViewPrefix(concatPath(fetchingPath, value.name))
+                                  }
+                                >
+                                  <Typography>{value.name}</Typography>
+                                </Link>
+                              </Stack>
+                          </TableCell>
+                          <FixedTableCell><Typography>{dateFormater.format(value.metadata.creation)}</Typography></FixedTableCell>
+                          <FixedTableCell><Typography>{dateFormater.format(value.metadata.modification)}</Typography></FixedTableCell>
+                        </TableRow>
+                      ))
+                    }
+                  </TableBody>
+                </Table>
+              </TableContainer> :
+            <ErrorInfo error={error} />
         }
       </Box>
       {
-        error === undefined &&
+        error === undefined && fileSystemObjects.length !== 0 &&
         <Drawer
           variant="permanent"
           anchor="right"
