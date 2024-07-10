@@ -2,7 +2,7 @@
 
 import { addExplorerPrefix, addViwPrefix as addViewPrefix, concatPath } from "@/shared/lib/path-utils";
 import { FileSystemObject } from "@/shared/model/file-system-object";
-import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton, Stack } from "@mui/material";
+import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton, Stack, Divider } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
 import FixedTableCell from "./fixed-table-cell";
@@ -149,7 +149,7 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
         >
           <Toolbar />
           <Box sx={{ overflow: 'auto' }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box padding={2} sx={{ display: "flex", justifyContent: "space-between" }}>
               {
                 selectedObjectsAmount === 1 ?
                   <Typography alignContent="center">{Object.values(selectedObjects)[0].name}</Typography> :
@@ -158,16 +158,21 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
               <IconButton onClick={() => {setInfoDrawerIsHidden(true)}}><CloseIcon /></IconButton>
             </Box>
             {
-              infoData && 
-              <List>
-                {infoData.map((data, index) => (
-                  <ListItem key={data.title} disablePadding>
-                    <ListItemText>
-                      <ListItemText primary={data.title} secondary={data.data}/>
-                    </ListItemText>
-                  </ListItem>
-                ))}
-              </List>
+              infoData &&
+              <>
+                <Divider />
+                <Box padding={2}> 
+                  <List>
+                    {infoData.map((data, index) => (
+                      <ListItem key={data.title} disablePadding>
+                        <ListItemText>
+                          <ListItemText primary={data.title} secondary={data.data}/>
+                        </ListItemText>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              </>
             }
           </Box>
         </Drawer>
