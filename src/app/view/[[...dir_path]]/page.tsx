@@ -4,7 +4,7 @@ import { joinPath } from "@/shared/lib/path-utils";
 
 export default async function Page({ params }: { params: { dir_path?: string[] } }) {
   const pathElements = [""];
-  (params.dir_path ?? []).forEach((value) => pathElements.push(value));
+  (params.dir_path ?? []).forEach((value) => pathElements.push(decodeURI(value)));
 
   console.log("fetching file to view content");
   const fetchingPath = joinPath(pathElements);
