@@ -10,8 +10,10 @@ export class HttpFileSystemApi implements FileSystemApi {
     if (!response.ok) {
       const problem = await response.json();
       console.log(`Problem: ${problem}`);
+      throw problem;
     }
     let payload = (await response.json()) as any[];
+    console.log(payload);
 
     payload = payload.map((value, index) => {
       const fsObject: FileSystemObject = {
@@ -19,6 +21,7 @@ export class HttpFileSystemApi implements FileSystemApi {
         "name": value["name"],
         "metadata": {
           "sizeBytes": value["metadata"]["sizeBytes"],
+          "sizeAccurate": value["metadata"]["sizeAccurate"],
           "creation": new Date(value["metadata"]["creation"]),
           "access": new Date(value["metadata"]["access"]),
           "modification": new Date(value["metadata"]["modification"]),

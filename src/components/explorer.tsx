@@ -2,7 +2,7 @@
 
 import { addExplorerPrefix, addViwPrefix as addViewPrefix, concatPath } from "@/shared/lib/path-utils";
 import { FileSystemObject } from "@/shared/model/file-system-object";
-import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton, Stack, Divider } from "@mui/material";
+import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton, Stack, Divider, ListItemIcon, Tooltip } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
 import FixedTableCell from "./fixed-table-cell";
@@ -12,10 +12,13 @@ import FileBreadcrumbs from "./file-breadcrumbs";
 import { SizeConvert } from "@/shared/lib/size-converter";
 import ErrorInfo from "./error-info";
 import Image from "next/image";
+import WarningIcon from '@mui/icons-material/Warning';
 
 type InfoData = {
   title: string,
   data: string
+  warning?: boolean
+  detail?: string
 }
 
 export default function Explorer({ pathElements, fetchingPath, fileSystemObjects, error } : { pathElements: string[], fetchingPath: string, fileSystemObjects : FileSystemObject[], error: any | undefined }) {
@@ -35,7 +38,9 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
     infoData = [
       {
         title: "Размер",
-        data: SizeConvert(selected.metadata.sizeBytes)
+        data: SizeConvert(selected.metadata.sizeBytes),
+        warning: !selected.metadata.sizeAccurate,
+        detail: "Не удалось расчитать полный размер из-за отсутствия доступа к некоторым дочерним файлам"
       }, {
         title: "Дата создания",
         data: dateFormater.format(selected.metadata.creation),
@@ -169,13 +174,23 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
                 <Divider />
                 <Box padding={2}> 
                   <List>
-                    {infoData.map((data, index) => (
-                      <ListItem key={data.title} disablePadding>
-                        <ListItemText>
-                          <ListItemText primary={data.title} secondary={data.data}/>
-                        </ListItemText>
-                      </ListItem>
-                    ))}
+                    {infoData.map((data, index) => {
+                      return (
+                        <ListItem key={data.title} disablePadding>
+                          <ListItemText>
+                            <ListItemText primary={data.title} secondary={data.data}/>
+                          </ListItemText>
+                          {
+                            data.warning &&
+                            <Tooltip title={data.detail}>
+                              <ListItemIcon>
+                                <WarningIcon />
+                              </ListItemIcon>
+                            </Tooltip>
+                          }
+                        </ListItem>
+                      );
+                    })}
                   </List>
                 </Box>
               </>
