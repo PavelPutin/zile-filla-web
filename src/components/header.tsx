@@ -14,7 +14,7 @@ export default function Header() {
         <Toolbar>
           <Stack alignItems="center" direction="row" gap={1}>
             <Image src={"/images/ZileFilla.png"} alt="Логотип" width={50} height={50} />
-            <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>Zile Filla</Typography>
+            <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }} color={"black"}>Zile Filla</Typography>
           </Stack>
         </Toolbar>
       </AppBar>
