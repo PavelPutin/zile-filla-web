@@ -12,11 +12,11 @@ export default function View({ pathElements, fileContent, error } : { pathElemen
       <FileBreadcrumbs pathElements={pathElements} />
       {
         error === undefined ?
-        <Paper elevation={3}>
+        <Paper elevation={5} sx={{ maxWidth: 1200, minHeight: 1697, margin: "0 auto" }}>
           <Box p={5}>
-            <Typography sx={{ whiteSpace: "pre-wrap" }}>{fileContent.content}</Typography>
+            <Typography>{fileContent.content}</Typography>
           </Box>
-        </Paper> :
+        </Paper>  :
         <ErrorInfo error={error} />
       }
     </>
