@@ -13,6 +13,7 @@ import { SizeConvert } from "@/shared/lib/size-converter";
 import ErrorInfo from "./error-info";
 import Image from "next/image";
 import WarningIcon from '@mui/icons-material/Warning';
+import { useRouter } from 'next/navigation'
 
 type InfoData = {
   title: string,
@@ -22,6 +23,7 @@ type InfoData = {
 }
 
 export default function Explorer({ pathElements, fetchingPath, fileSystemObjects, error } : { pathElements: string[], fetchingPath: string, fileSystemObjects : FileSystemObject[], error: any | undefined }) {
+  const router = useRouter();
   const [selectedObjects, setSelectedObjects] = useState<{[path: string]: FileSystemObject}>({});
   const [infoDrawerIsHidden, setInfoDrawerIsHidden] = useState<boolean>(true);
   const dateFormater: Intl.DateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
@@ -58,19 +60,33 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
     return selectedObjects[key] !== undefined;
   }
 
-  function handleRowClick(value: FileSystemObject) {
+  function handleRowClick(event: MouseEvent, value: FileSystemObject) {
     const key = concatPath(fetchingPath, value.name);
-    if (key in selectedObjects) {
-      let copy = { ...selectedObjects };
-      delete copy[key];
-      setSelectedObjects(copy);
+    if (event.button !== 0) {
+      return;
+    }
+
+    if (event.ctrlKey) {
+      if (key in selectedObjects) {
+        let copy = { ...selectedObjects };
+        delete copy[key];
+        setSelectedObjects(copy);
+      } else {
+        let justSelected : { [key: string]: FileSystemObject } = {};
+        justSelected[key] = value;
+        setSelectedObjects(selectedObjects => ({
+          ...selectedObjects,
+          ...justSelected
+        }));
+      }
     } else {
-      let justSelected : { [key: string]: FileSystemObject } = {};
-      justSelected[key] = value;
-      setSelectedObjects(selectedObjects => ({
-        ...selectedObjects,
-        ...justSelected
-      }));
+      if (key in selectedObjects && selectedObjectsAmount === 1) {
+        setSelectedObjects({});
+      } else {
+        let justSelected : { [key: string]: FileSystemObject } = {};
+        justSelected[key] = value;
+        setSelectedObjects(justSelected);
+      }
     }
   }
 
@@ -107,7 +123,18 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
                   <TableBody>
                     {
                       fileSystemObjects.map((value) => (
-                        <TableRow key={concatPath(fetchingPath, value.name)} hover sx={{ cursor: 'pointer' }} onClick={() => handleRowClick(value)} selected={isSelected(concatPath(fetchingPath, value.name))}>
+                        <TableRow 
+                          key={concatPath(fetchingPath, value.name)} 
+                          hover 
+                          sx={{ cursor: 'pointer' }} 
+                          onClick={(e) => handleRowClick(e.nativeEvent, value)}
+                          selected={isSelected(concatPath(fetchingPath, value.name))}
+                          onDoubleClick={() => router.push(
+                            value.type === "dir" ?
+                              addExplorerPrefix(concatPath(fetchingPath, value.name)) :
+                              addViewPrefix(concatPath(fetchingPath, value.name))
+                          )}
+                        >
                           <TableCell>
                               <Stack alignItems="center" direction="row" gap={2}>
                                 {value.type === "dir" ?
