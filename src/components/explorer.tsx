@@ -190,7 +190,7 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
                             data.warning &&
                             <Tooltip title={data.detail}>
                               <ListItemIcon>
-                                <WarningIcon />
+                                <WarningIcon color="warning"/>
                               </ListItemIcon>
                             </Tooltip>
                           }
