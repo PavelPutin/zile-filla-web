@@ -22,6 +22,7 @@ export class HttpFileSystemApi implements FileSystemApi {
         "metadata": {
           "sizeBytes": value["metadata"]["sizeBytes"],
           "sizeAccurate": value["metadata"]["sizeAccurate"],
+          "readable": value["metadata"]["readable"],
           "creation": new Date(value["metadata"]["creation"]),
           "access": new Date(value["metadata"]["access"]),
           "modification": new Date(value["metadata"]["modification"]),

@@ -133,6 +133,12 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
                                 >
                                   <Typography>{value.name}</Typography>
                                 </Link>
+                                {
+                                  !value.metadata.readable &&
+                                  <Tooltip title="Файл не доступен для чтения">
+                                    <WarningIcon color="warning"/>
+                                  </Tooltip>
+                                }
                               </Stack>
                           </TableCell>
                           <FixedTableCell><Typography>{dateFormater.format(value.metadata.creation)}</Typography></FixedTableCell>
