@@ -1,4 +1,5 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import Image from "next/image";
 
 type ErrorInfoProps = {
   type: string,
@@ -47,10 +48,11 @@ export default function ErrorInfo({ error }: { error: ErrorInfoProps }) {
   }
 
   return (
-    <Box>
+    <Stack alignItems="center">
+      <Image src="/images/ZileFilla.png" alt="Зайлфилла недовольна ошибкой" width={230} height={230}/>
       <Typography align="center" variant="h1">{title}</Typography>
       <Typography align="center" variant="h2">{error.status}</Typography>
       <Typography align="center">{detail}</Typography>
-    </Box>
+    </Stack>
   );
 }
