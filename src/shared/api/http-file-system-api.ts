@@ -4,7 +4,7 @@ import { FileSystemApi } from "./file-system-api";
 
 export class HttpFileSystemApi implements FileSystemApi {
   async changeDirectory(path: string): Promise<FileSystemObject[]> {
-    console.log(`Start changeDirectory(${path})`);
+    console.log(`Start changeDirectory(${path}). Fetching http://${process.env.BACKEND_HOST}:8080/explorer${path}`);
     const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/explorer${path}`, {cache: "no-store"});
     console.log(`Response status from ${path}: ${response.status} (${response.statusText})`);
     if (!response.ok) {
