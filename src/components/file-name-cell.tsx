@@ -1,7 +1,7 @@
 "use client"
 
 import { addExplorerPrefix, addViwPrefix as addViewPrefix, concatPath } from "@/shared/lib/path-utils";
-import { TableCell, Box, Stack, Typography, Tooltip, IconButton, TextField, CircularProgress } from "@mui/material";
+import { TableCell, Box, Stack, Typography, Tooltip, IconButton, TextField, CircularProgress, Snackbar, Alert, AlertTitle } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
@@ -10,8 +10,10 @@ import { FileSystemObject } from "@/shared/model/file-system-object";
 import { useState } from "react";
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
-import { renameFileSystemObject } from "@/app/actions";
+import { RenameActionState, renameFileSystemObject } from "@/app/actions";
 import { useFormState, useFormStatus } from "react-dom";
+import { error } from "console";
+import ErrorInfo, { ErrorInfoProps } from "./error-info";
 
 
 function ControllPart({onSubmitClick, onCancelClick }: { onSubmitClick: () => void, onCancelClick: () => void }) {
@@ -47,9 +49,9 @@ function ControllPart({onSubmitClick, onCancelClick }: { onSubmitClick: () => vo
   ;
 }
 
-
 export default function FileNameCell({ value, fetchingPath }: { value: FileSystemObject, fetchingPath: string }) {
-  const [state, formAction] = useFormState(renameFileSystemObject, { message: ""})
+  const [snackBarVisible, setSnackBarVisible] = useState(false);
+  const [state, formAction] = useFormState(renameFileSystemObject, {message: "", newName: "", error: {status: 0, title: "", detail: "", type: "", instance: ""} as ErrorInfoProps});
   const [editing, setEditing] = useState(false);
   const [nameError, setNameError] = useState(false);
 
@@ -71,13 +73,27 @@ export default function FileNameCell({ value, fetchingPath }: { value: FileSyste
             >
               <DriveFileRenameOutlineIcon />
             </IconButton>
-      </Tooltip>
+      </Tooltip>;
 
   if (state.message === "Done") {
     state.message = "";
+    value.name = state.newName ?? "";
+    state.newName = "";
     setEditing(false);
     setNameError(false);
+  } else if (state.message === "Error") {
+    state.message = "";
+    setNameError(true);
+    setSnackBarVisible(true);
   }
+
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSnackBarVisible(false);
+  };
 
   return (
     <TableCell>
@@ -101,27 +117,30 @@ export default function FileNameCell({ value, fetchingPath }: { value: FileSyste
             
             {
               editing ?
-                <TextField
-                  error={ nameError }
-                  placeholder={ nameError ? "Имя не может быть пустым" : undefined }
-                  id="file-name"
-                  name="file-name"
-                  size="small" 
-                  defaultValue={value.name}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  onChange={(e) => {
-                    if (e.target.value.trim().length !== 0) {
-                      setNameError(false);
-                    } else {
-                      setNameError(true);
-                    }
-                  }}
-                /> :
+                <>
+                  <input name="source" value={fetchingPath + value.name} hidden readOnly/>
+                  <TextField
+                    error={ nameError }
+                    placeholder={ nameError ? "Имя не может быть пустым" : undefined }
+                    id="file-name"
+                    name="file-name"
+                    size="small" 
+                    defaultValue={value.name}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onChange={(e) => {
+                      if (e.target.value.trim().length !== 0) {
+                        setNameError(false);
+                      } else {
+                        setNameError(true);
+                      }
+                    }}
+                  />
+                </> :
                 <Link
                   href={value.type === "dir" ?
                       addExplorerPrefix(concatPath(fetchingPath, value.name)) :
@@ -142,6 +161,7 @@ export default function FileNameCell({ value, fetchingPath }: { value: FileSyste
           
           { controllPart }
         </Box>
+        <ErrorInfo error={state.error} variant="snackbar" open={snackBarVisible} handleClose={handleClose}  />
       </form>
     </TableCell>
   );

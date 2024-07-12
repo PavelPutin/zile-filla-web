@@ -34,5 +34,27 @@ export class HttpFileSystemApi implements FileSystemApi {
     console.log(`Fetched ${payload.length} elements`);
     return payload;
   }
+
+  async rename(source: string, newName: string): Promise<void> {
+    console.log(`Start rename(${source}, ${newName}). Fetching http://${process.env.BACKEND_HOST}:8080/explorer${source}`);
+    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/explorer${source}`, {
+      method: "PUT",
+      cache: "no-store",
+      body: JSON.stringify({
+        newName: newName,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(`Response status from ${source}: ${response.status} (${response.statusText})`);
+    if (!response.ok) {
+      const problem = await response.json();
+      console.log(`Problem: ${problem}`);
+      throw problem;
+    }
+    
+    return;
+  }
 }
 
