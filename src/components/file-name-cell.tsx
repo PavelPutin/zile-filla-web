@@ -118,7 +118,7 @@ export default function FileNameCell({ value, fetchingPath }: { value: FileSyste
             {
               editing ?
                 <>
-                  <input name="source" value={fetchingPath + value.name} hidden readOnly/>
+                  <input name="source" value={fetchingPath + (fetchingPath === "/" ? "" : "/") + value.name} hidden readOnly/>
                   <TextField
                     error={ nameError }
                     placeholder={ nameError ? "Имя не может быть пустым" : undefined }
