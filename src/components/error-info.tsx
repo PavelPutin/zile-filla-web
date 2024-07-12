@@ -13,7 +13,7 @@ export default function ErrorInfo({ error, variant, open, handleClose }: { error
   let title, detail: string;
 
   switch (error.type) {
-    case "/zile-filla/file-access-denied/":
+    case "/zile-filla/file-access-denied":
       title = "Нет доступа к файлу";
       detail = `У вас нет разрешения на чтение файла ${error.instance}`;
       break;
