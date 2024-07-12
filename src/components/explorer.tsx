@@ -14,6 +14,8 @@ import ErrorInfo from "./error-info";
 import Image from "next/image";
 import WarningIcon from '@mui/icons-material/Warning';
 import { useRouter } from 'next/navigation'
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import FileNameCell from "./file-name-cell";
 
 type InfoData = {
   title: string,
@@ -135,39 +137,7 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
                               addViewPrefix(concatPath(fetchingPath, value.name))
                           )}
                         >
-                          <TableCell>
-                              <Stack alignItems="center" direction="row" gap={2}>
-                                {value.type === "dir" ?
-                                  <Image
-                                    src="/images/directory.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Директория:"
-                                  /> :
-                                  <Image
-                                    src="/images/file.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Файл:"
-                                  />
-                                }
-                                
-                                <Link
-                                  href={value.type === "dir" ?
-                                      addExplorerPrefix(concatPath(fetchingPath, value.name)) :
-                                      addViewPrefix(concatPath(fetchingPath, value.name))
-                                  }
-                                >
-                                  <Typography>{value.name}</Typography>
-                                </Link>
-                                {
-                                  !value.metadata.readable &&
-                                  <Tooltip title="Файл не доступен для чтения">
-                                    <WarningIcon color="warning"/>
-                                  </Tooltip>
-                                }
-                              </Stack>
-                          </TableCell>
+                          <FileNameCell value={value} fetchingPath={fetchingPath} />
                           <FixedTableCell><Typography>{dateFormater.format(value.metadata.creation)}</Typography></FixedTableCell>
                           <FixedTableCell><Typography>{dateFormater.format(value.metadata.modification)}</Typography></FixedTableCell>
                         </TableRow>
