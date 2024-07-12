@@ -56,5 +56,19 @@ export class HttpFileSystemApi implements FileSystemApi {
     
     return;
   }
+
+
+  async delete(path: string) : Promise<void> {
+    console.log(`Start delete(${path}). Fetching http://${process.env.BACKEND_HOST}:8080/explorer${path}`);
+    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/explorer${path}`, {cache: "no-store", method: "DELETE",});
+    console.log(`Response status from ${path}: ${response.status} (${response.statusText})`);
+    if (!response.ok) {
+      const problem = await response.json();
+      console.log(`Problem: ${problem}`);
+      throw problem;
+    }
+    
+    return;
+  }
 }
 
