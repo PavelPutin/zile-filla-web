@@ -39,3 +39,15 @@ export async function renameFileSystemObject(prevState: RenameActionState, formD
   }
   
 } 
+
+export type DeleteActionState = {
+  message: string, 
+  error: ErrorInfoProps,
+};
+
+export async function deleteFileSystemObject(prevState: DeleteActionState, formData: FormData) {
+  console.log("delete")
+  console.dir(formData);
+  // const response = await fileSystemApi.delete();
+  return { message: "Done", error: {status: 0, title: "", detail: "", type: "", instance: ""} as ErrorInfoProps };
+}
