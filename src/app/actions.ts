@@ -2,6 +2,7 @@
 
 import { ErrorInfoProps } from "@/components/error-info";
 import { fileSystemApi } from "@/shared/api/file-system-api";
+import { FileSystemObject } from "@/shared/model/file-system-object";
 
 export type RenameActionState = {
   message: string, 
@@ -40,14 +41,21 @@ export async function renameFileSystemObject(prevState: RenameActionState, formD
   
 } 
 
-export type DeleteActionState = {
-  message: string, 
-  error: ErrorInfoProps,
-};
-
-export async function deleteFileSystemObject(prevState: DeleteActionState, formData: FormData) {
+export async function deleteFileSystemObject(filesToDelete: string[]) {
   console.log("delete")
-  console.dir(formData);
-  // const response = await fileSystemApi.delete();
-  return { message: "Done", error: {status: 0, title: "", detail: "", type: "", instance: ""} as ErrorInfoProps };
+  console.log(filesToDelete)
+  // await new Promise((resolve) => setTimeout(resolve, 3000));
+  let errors: ErrorInfoProps[] = [];
+  for (const value of filesToDelete) {
+    try {
+      const response = await fileSystemApi.delete(value);
+    } catch (e) {
+      errors.push(e as ErrorInfoProps);
+    }
+  };
+  console.log("complete deleteFileSystemObject");
+  if (errors.length > 0) {
+    console.log(`Occured ${errors.length} errors`);
+    throw errors;
+  }
 }

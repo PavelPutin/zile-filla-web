@@ -2,9 +2,9 @@
 
 import { addExplorerPrefix, addViwPrefix as addViewPrefix, concatPath } from "@/shared/lib/path-utils";
 import { FileSystemObject } from "@/shared/model/file-system-object";
-import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton, Stack, Divider, ListItemIcon, Tooltip, CircularProgress } from "@mui/material";
+import { Box, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Drawer, Toolbar, List, ListItem, ListItemText, Typography, IconButton, Stack, Divider, ListItemIcon, Tooltip, CircularProgress, Snackbar, Alert, AlertTitle } from "@mui/material";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import FixedTableCell from "./fixed-table-cell";
 import InfoIcon from '@mui/icons-material/Info';
 import CloseIcon from '@mui/icons-material/Close';
@@ -27,26 +27,11 @@ type InfoData = {
   detail?: string
 }
 
-function DeleteButton({ onDelete, args }: { onDelete: (args: string[]) => void, args: string[] }) {
-  const [ pending, setPending ]  = useState(false);
-
-  return pending ?
-    <CircularProgress size={15} color="error" /> :
-    <Tooltip title="Удалить" onClick={() => {
-      
-    }}>
-      <IconButton >
-        <DeleteIcon color="error" onClick={() => {
-          setPending(true);
-          onDelete(args);
-        }}/>
-      </IconButton>
-    </Tooltip>
-  ;
-}
-
-export default function Explorer({ pathElements, fetchingPath, fileSystemObjects, error } : { pathElements: string[], fetchingPath: string, fileSystemObjects : FileSystemObject[], error: any | undefined }) {
+export default function Explorer({ pathElements, fetchingPath, initFileSystemObjects, error } : { pathElements: string[], fetchingPath: string, initFileSystemObjects : FileSystemObject[], error: any | undefined }) {
   const router = useRouter();
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [deleteSnackbarOpen, setDeleteSnackbarOpen] = useState<boolean>(false);
+  const [fileSystemObjects, setFileSystemObjects] = useState<FileSystemObject[]>(initFileSystemObjects);
   const [selectedObjects, setSelectedObjects] = useState<{[path: string]: FileSystemObject}>({});
   const [infoDrawerIsHidden, setInfoDrawerIsHidden] = useState<boolean>(true);
   const dateFormater: Intl.DateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
@@ -121,11 +106,33 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
             <FileBreadcrumbs pathElements={pathElements} />
             {
               error === undefined &&
-              <Stack direction={"row"} sx={{ minHeight: 40 }}>
+              <Stack direction={"row"} alignItems={"center"} sx={{ minHeight: 40 }}>
                 {selectedObjectsAmount > 0 && <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>}
                 {selectedObjectsAmount === 1 && <IconButton onClick={() => {setInfoDrawerIsHidden(false)}}><InfoIcon /></IconButton>}
-                {selectedObjectsAmount > 0 && <DeleteButton />
-                }
+                {selectedObjectsAmount > 0 && (
+                  deleteLoading ?
+                    <CircularProgress size={20} color="error"/> :
+                    <Tooltip title="Удалить выбранные элементы">
+                      <IconButton onClick={() => {
+                        setDeleteLoading(true);
+                        deleteFileSystemObject(Object.keys(selectedObjects))
+                          .then((data) => {
+                            setDeleteLoading(false);
+                            setFileSystemObjects(fileSystemObjects.filter((value) => !selectedObjects[concatPath(fetchingPath, value.name)]));
+                            setSelectedObjects({});
+                          })
+                          .catch((reason) => {
+                            console.log(`reason ${reason}`);
+                            setDeleteSnackbarOpen(true);
+                          })
+                          .finally(() => {
+                            setDeleteLoading(false);
+                          });
+                      }}>
+                        <DeleteIcon color="error"/>
+                      </IconButton>
+                    </Tooltip>
+                )}
               </Stack>
             }
           </Box>
@@ -225,6 +232,19 @@ export default function Explorer({ pathElements, fetchingPath, fileSystemObjects
             </Box>
           </Drawer>
         }
+        <Snackbar
+          open={deleteSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setDeleteSnackbarOpen(false)}
+          message="Не удалось удалить некоторые файлы"
+        >
+          <Alert onClose={() => setDeleteSnackbarOpen(false)}
+            severity="error"
+            variant="filled"
+          >
+            <AlertTitle>Не удалось удалить некоторые файлы</AlertTitle>
+          </Alert>
+        </Snackbar>
       </Box>
     </>
   );

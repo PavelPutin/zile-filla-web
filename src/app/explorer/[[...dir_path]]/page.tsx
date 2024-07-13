@@ -15,13 +15,13 @@ export default async function Page({ params }: { params: { dir_path?: string[] }
     console.log(`file system objects: ${currentDirectoryChildren}`);
     return (
       <>
-        <Explorer pathElements={pathElements} fetchingPath={fetchingPath} fileSystemObjects={currentDirectoryChildren} error={undefined}/>
+        <Explorer pathElements={pathElements} fetchingPath={fetchingPath} initFileSystemObjects={currentDirectoryChildren} error={undefined}/>
       </>
     );
   } catch (e: any) {
     return (
       <>
-        <Explorer pathElements={pathElements} fetchingPath={fetchingPath} fileSystemObjects={[]} error={e}/>
+        <Explorer pathElements={pathElements} fetchingPath={fetchingPath} initFileSystemObjects={[]} error={e}/>
       </>
     );
   }

@@ -67,6 +67,7 @@ export class HttpFileSystemApi implements FileSystemApi {
       console.log(`Problem: ${problem}`);
       throw problem;
     }
+    console.log("Compolete deleting");
     
     return;
   }
