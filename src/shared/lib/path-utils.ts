@@ -16,9 +16,9 @@ export function concatPath(prefix: string, suffix: string): string {
 }
 
 export function addExplorerPrefix(path: string) {
-  return "/explorer/" + path;
+  return "/explorer" + path;
 }
 
 export function addViwPrefix(path: string) {
-  return "/view/" + path;
+  return "/view" + path;
 }
