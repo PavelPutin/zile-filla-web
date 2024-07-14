@@ -5,7 +5,7 @@ import ErrorInfo from "@/components/error-info";
 
 export default async function Page({ params }: { params: { dir_path?: string[] } }) {
   const pathElements = [""];
-  (params.dir_path ?? []).forEach((value) => pathElements.push(value));
+  (params.dir_path ?? []).forEach((value) => pathElements.push(decodeURI(value)));
 
   console.log("fetching data");
   const fetchingPath = joinPath(pathElements);
