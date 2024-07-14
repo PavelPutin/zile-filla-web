@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { FileSystemMetadata } from "../model/file-system-metadata";
 import { FileSystemObject } from "../model/file-system-object";
 import { FileSystemApi } from "./file-system-api";
@@ -32,6 +33,7 @@ export class HttpFileSystemApi implements FileSystemApi {
     }) as FileSystemObject[];
 
     console.log(`Fetched ${payload.length} elements`);
+    revalidatePath(`/explorer${path}`);
     return payload;
   }
 
@@ -69,6 +71,7 @@ export class HttpFileSystemApi implements FileSystemApi {
     }
     console.log("Compolete deleting");
     
+    revalidatePath(`/explorer${path}`);
     return;
   }
 }
