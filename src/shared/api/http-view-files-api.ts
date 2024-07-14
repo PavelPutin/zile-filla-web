@@ -12,6 +12,7 @@ export class HttpViewFilesApi implements ViewFilesApi {
     }
     let payload = (await response.json()) as TextFileContent;
     revalidatePath(`/view${path}`);
+    console.log("Got viewer payload");
     return payload;
   }
 }

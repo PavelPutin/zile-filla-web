@@ -49,6 +49,10 @@ export default function ErrorInfo({ error, variant, open, handleClose }: { error
       title = "Файл уже существует";
       detail = "Не удалось переименовать или переместить файл из-за конфлитка имён";
       break;
+    case "/zile-filla/file-too-big":
+      title = "Файл слишком большой";
+      detail = "Не удалось получить файл, так как его размер больше 100 МиБ";
+      break;
     default:
       title = "Возникла неизвестная ошибка";
       detail = "Мы не знаем, что произошло :("
