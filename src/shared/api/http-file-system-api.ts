@@ -6,7 +6,7 @@ import { FileSystemApi } from "./file-system-api";
 export class HttpFileSystemApi implements FileSystemApi {
   async changeDirectory(path: string): Promise<FileSystemObject[]> {
     console.log(`Start changeDirectory(${path}). Fetching http://${process.env.BACKEND_HOST}:8080/explorer${path}`);
-    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/explorer${path}`, {cache: "no-store"});
+    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/v1/explorer${path}`, {cache: "no-store"});
     console.log(`Response status from ${path}: ${response.status} (${response.statusText})`);
     if (!response.ok) {
       const problem = await response.json();
@@ -39,7 +39,7 @@ export class HttpFileSystemApi implements FileSystemApi {
 
   async rename(source: string, newName: string): Promise<void> {
     console.log(`Start rename(${source}, ${newName}). Fetching http://${process.env.BACKEND_HOST}:8080/explorer${source}`);
-    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/explorer${source}`, {
+    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/v1/explorer${source}`, {
       method: "PUT",
       cache: "no-store",
       body: JSON.stringify({
@@ -62,7 +62,7 @@ export class HttpFileSystemApi implements FileSystemApi {
 
   async delete(path: string) : Promise<void> {
     console.log(`Start delete(${path}). Fetching http://${process.env.BACKEND_HOST}:8080/explorer${path}`);
-    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/explorer${path}`, {cache: "no-store", method: "DELETE",});
+    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/v1/explorer${path}`, {cache: "no-store", method: "DELETE",});
     console.log(`Response status from ${path}: ${response.status} (${response.statusText})`);
     if (!response.ok) {
       const problem = await response.json();
