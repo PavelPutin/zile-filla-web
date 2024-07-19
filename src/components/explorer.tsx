@@ -98,6 +98,23 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
     }
   }
 
+  function deleteFilesHandler() {
+    setDeleteLoading(true);
+    deleteFileSystemObject(Object.keys(selectedObjects))
+      .then((data) => {
+        setDeleteLoading(false);
+        setFileSystemObjects(fileSystemObjects.filter((value) => !selectedObjects[concatPath(fetchingPath, value.name)]));
+        setSelectedObjects({});
+      })
+      .catch((reason) => {
+        console.log(`reason ${reason}`);
+        setDeleteSnackbarOpen(true);
+      })
+      .finally(() => {
+        setDeleteLoading(false);
+      });
+  }
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -113,22 +130,7 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
                   deleteLoading ?
                     <CircularProgress size={20} color="error"/> :
                     <Tooltip title="Удалить выбранные элементы">
-                      <IconButton onClick={() => {
-                        setDeleteLoading(true);
-                        deleteFileSystemObject(Object.keys(selectedObjects))
-                          .then((data) => {
-                            setDeleteLoading(false);
-                            setFileSystemObjects(fileSystemObjects.filter((value) => !selectedObjects[concatPath(fetchingPath, value.name)]));
-                            setSelectedObjects({});
-                          })
-                          .catch((reason) => {
-                            console.log(`reason ${reason}`);
-                            setDeleteSnackbarOpen(true);
-                          })
-                          .finally(() => {
-                            setDeleteLoading(false);
-                          });
-                      }}>
+                      <IconButton onClick={deleteFilesHandler}>
                         <DeleteIcon color="error"/>
                       </IconButton>
                     </Tooltip>
