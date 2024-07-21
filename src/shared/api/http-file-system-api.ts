@@ -97,5 +97,28 @@ export class HttpFileSystemApi implements FileSystemApi {
     console.log("Complete move");
     revalidatePath(`/explorer${source}`);
   }
+
+  async copy(source: string, destination: string) {
+    console.log(`Start copy ${source} to ${destination}`);
+    const response = await fetch(`http://${process.env.BACKEND_HOST}:8080/v1/explorer${source}`, {
+      cache: "no-store",
+      method: "POST",
+      body: JSON.stringify({
+        actionType: "COPY",
+        target: destination
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(`Response status from ${source}: ${response.status} (${response.statusText})`);
+    if (!response.ok) {
+      const problem = await response.json();
+      console.log(`Problem: ${problem}`);
+      throw problem;
+    }
+    console.log("Complete copy");
+    revalidatePath(`/explorer${source}`);
+  }
 }
 

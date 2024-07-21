@@ -18,9 +18,10 @@ import { useRouter } from 'next/navigation'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import FileNameCell from "./file-name-cell";
 import { useFormState, useFormStatus } from "react-dom";
-import { deleteFileSystemObject, moveFileSystemObject } from "@/app/actions";
+import { copyFileSystemObject, deleteFileSystemObject, moveFileSystemObject } from "@/app/actions";
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DestinationChooseDialog from "./destination-choose-dialog";
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 type InfoData = {
   title: string,
@@ -33,12 +34,15 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
   const router = useRouter();
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [moveLoading, setMoveLoading] = useState<boolean>(false);
+  const [copyLoading, setCopyLoading] = useState<boolean>(false);
   const [deleteSnackbarOpen, setDeleteSnackbarOpen] = useState<boolean>(false);
   const [moveSnackbarOpen, setMoveSnackbarOpen] = useState<boolean>(false);
+  const [copySnackbarOpen, setCopySnackbarOpen] = useState<boolean>(false);
   const [fileSystemObjects, setFileSystemObjects] = useState<FileSystemObject[]>(initFileSystemObjects);
   const [selectedObjects, setSelectedObjects] = useState<{[path: string]: FileSystemObject}>({});
   const [infoDrawerIsHidden, setInfoDrawerIsHidden] = useState<boolean>(true);
-  const [destinationChooseDialogOpen, setDestinationChooseDialogOpen] = useState<boolean>(false);
+  const [moveDestinationChooseDialogOpen, setMoveDestinationChooseDialogOpen] = useState<boolean>(false);
+  const [copyDestinationChooseDialogOpen, setCopyDestinationChooseDialogOpen] = useState<boolean>(false);
   const dateFormater: Intl.DateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
     year: "numeric",
     month: "numeric",
@@ -122,7 +126,7 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
 
   function moveFilesHandler() {
     setMoveLoading(true);
-    setDestinationChooseDialogOpen(true);
+    setMoveDestinationChooseDialogOpen(true);
   }
 
   function moveFiles(destination: string) {
@@ -133,6 +137,18 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
       })
       .catch((reason) => {setMoveSnackbarOpen(true)})
       .finally(() => setMoveLoading(false));
+  }
+
+
+  function copyFilesHandler() {
+    setCopyLoading(true);
+    setCopyDestinationChooseDialogOpen(true);
+  }
+
+  function copyFiles(destination: string) {
+    copyFileSystemObject(Object.keys(selectedObjects), destination)
+      .catch((reason) => {setCopySnackbarOpen(true)})
+      .finally(() => setCopyLoading(false));
   }
 
   return (
@@ -152,6 +168,15 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
                     <Tooltip title="Переместить выбранные элементы">
                       <IconButton onClick={moveFilesHandler}>
                         <DriveFileMoveIcon />
+                      </IconButton>
+                    </Tooltip>
+                )}
+                {selectedObjectsAmount > 0 && (
+                  copyLoading ?
+                    <CircularProgress size={20} /> :
+                    <Tooltip title="Копировать выбранные элементы">
+                      <IconButton onClick={copyFilesHandler}>
+                        <FileCopyIcon />
                       </IconButton>
                     </Tooltip>
                 )}
@@ -289,14 +314,36 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
             <AlertTitle>Не удалось переместить файлы</AlertTitle>
           </Alert>
         </Snackbar>
+        <Snackbar
+          open={copySnackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setCopySnackbarOpen(false)}
+          message="Не удалось копировать файлы"
+        >
+          <Alert onClose={() => setCopySnackbarOpen(false)}
+            severity="error"
+            variant="filled"
+          >
+            <AlertTitle>Не удалось копировать файлы</AlertTitle>
+          </Alert>
+        </Snackbar>
       </Box>
-      <DestinationChooseDialog open={destinationChooseDialogOpen} onCloseOk={(destination) => {
-          setDestinationChooseDialogOpen(false);
+      <DestinationChooseDialog open={moveDestinationChooseDialogOpen} onCloseOk={(destination) => {
+          setMoveDestinationChooseDialogOpen(false);
           moveFiles(destination);
         }}
         onCloseCancel={() => {
           setMoveLoading(false);
-          setDestinationChooseDialogOpen(false);
+          setMoveDestinationChooseDialogOpen(false);
+        }} 
+      />
+      <DestinationChooseDialog open={copyDestinationChooseDialogOpen} onCloseOk={(destination) => {
+          setCopyDestinationChooseDialogOpen(false);
+          copyFiles(destination);
+        }}
+        onCloseCancel={() => {
+          setCopyLoading(false);
+          setCopyDestinationChooseDialogOpen(false);
         }} 
       />
     </>

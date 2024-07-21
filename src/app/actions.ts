@@ -77,6 +77,23 @@ export async function moveFileSystemObject(sourceFiles: string[], destination: s
   }
 }
 
+export async function copyFileSystemObject(sourceFiles: string[], destination: string) {
+  console.log(`Batch copy of ${sourceFiles.length} files`);
+  let errors: ErrorInfoProps[] = [];
+  for (const value of sourceFiles) {
+    try {
+      await fileSystemApi.copy(value, destination);
+    } catch (e) {
+      errors.push(e as ErrorInfoProps);
+    }
+  };
+  console.log("complete moveFileSystemObject");
+  if (errors.length > 0) {
+    console.log(`Occured ${errors.length} errors`);
+    throw errors;
+  }
+}
+
 export async function changeDirectory(path: string) {
   return await fileSystemApi.changeDirectory(path);
 }

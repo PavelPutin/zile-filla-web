@@ -6,6 +6,7 @@ export interface FileSystemApi {
   rename(source: string, newName: string) : Promise<void>;
   delete(path: string) : Promise<void>;
   move(source: string, destination: string) : Promise<void>;
+  copy(source: string, destination: string) : Promise<void>;
 }
 
 export const fileSystemApi = new HttpFileSystemApi();
