@@ -18,7 +18,9 @@ import { useRouter } from 'next/navigation'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import FileNameCell from "./file-name-cell";
 import { useFormState, useFormStatus } from "react-dom";
-import { deleteFileSystemObject } from "@/app/actions";
+import { deleteFileSystemObject, moveFileSystemObject } from "@/app/actions";
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import DestinationChooseDialog from "./destination-choose-dialog";
 
 type InfoData = {
   title: string,
@@ -30,10 +32,13 @@ type InfoData = {
 export default function Explorer({ pathElements, fetchingPath, initFileSystemObjects, error } : { pathElements: string[], fetchingPath: string, initFileSystemObjects : FileSystemObject[], error: any | undefined }) {
   const router = useRouter();
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [moveLoading, setMoveLoading] = useState<boolean>(false);
   const [deleteSnackbarOpen, setDeleteSnackbarOpen] = useState<boolean>(false);
+  const [moveSnackbarOpen, setMoveSnackbarOpen] = useState<boolean>(false);
   const [fileSystemObjects, setFileSystemObjects] = useState<FileSystemObject[]>(initFileSystemObjects);
   const [selectedObjects, setSelectedObjects] = useState<{[path: string]: FileSystemObject}>({});
   const [infoDrawerIsHidden, setInfoDrawerIsHidden] = useState<boolean>(true);
+  const [destinationChooseDialogOpen, setDestinationChooseDialogOpen] = useState<boolean>(false);
   const dateFormater: Intl.DateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
     year: "numeric",
     month: "numeric",
@@ -115,6 +120,21 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
       });
   }
 
+  function moveFilesHandler() {
+    setMoveLoading(true);
+    setDestinationChooseDialogOpen(true);
+  }
+
+  function moveFiles(destination: string) {
+    moveFileSystemObject(Object.keys(selectedObjects), destination)
+      .then((data) => {
+        setFileSystemObjects(fileSystemObjects.filter((value) => !selectedObjects[concatPath(fetchingPath, value.name)]));
+        setSelectedObjects({});
+      })
+      .catch((reason) => {setMoveSnackbarOpen(true)})
+      .finally(() => setMoveLoading(false));
+  }
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -126,6 +146,15 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
               <Stack direction={"row"} alignItems={"center"} sx={{ minHeight: 40 }}>
                 {selectedObjectsAmount > 0 && <Typography alignContent="center">Выбрано элементов: {selectedObjectsAmount}</Typography>}
                 {selectedObjectsAmount === 1 && <IconButton onClick={() => {setInfoDrawerIsHidden(false)}}><InfoIcon /></IconButton>}
+                {selectedObjectsAmount > 0 && (
+                  moveLoading ?
+                    <CircularProgress size={20} /> :
+                    <Tooltip title="Переместить выбранные элементы">
+                      <IconButton onClick={moveFilesHandler}>
+                        <DriveFileMoveIcon />
+                      </IconButton>
+                    </Tooltip>
+                )}
                 {selectedObjectsAmount > 0 && (
                   deleteLoading ?
                     <CircularProgress size={20} color="error"/> :
@@ -247,7 +276,29 @@ export default function Explorer({ pathElements, fetchingPath, initFileSystemObj
             <AlertTitle>Не удалось удалить некоторые файлы</AlertTitle>
           </Alert>
         </Snackbar>
+        <Snackbar
+          open={moveSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setMoveSnackbarOpen(false)}
+          message="Не удалось переместить файлы"
+        >
+          <Alert onClose={() => setMoveSnackbarOpen(false)}
+            severity="error"
+            variant="filled"
+          >
+            <AlertTitle>Не удалось переместить файлы</AlertTitle>
+          </Alert>
+        </Snackbar>
       </Box>
+      <DestinationChooseDialog open={destinationChooseDialogOpen} onCloseOk={(destination) => {
+          setDestinationChooseDialogOpen(false);
+          moveFiles(destination);
+        }}
+        onCloseCancel={() => {
+          setMoveLoading(false);
+          setDestinationChooseDialogOpen(false);
+        }} 
+      />
     </>
   );
 }

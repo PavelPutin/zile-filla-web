@@ -5,6 +5,7 @@ export interface FileSystemApi {
   changeDirectory(path: string) : Promise<FileSystemObject[]>;
   rename(source: string, newName: string) : Promise<void>;
   delete(path: string) : Promise<void>;
+  move(source: string, destination: string) : Promise<void>;
 }
 
 export const fileSystemApi = new HttpFileSystemApi();
